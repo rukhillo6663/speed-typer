@@ -8,7 +8,7 @@ const settingsForm = document.querySelector("#settings-form");
 const settings = document.querySelector("#settings");
 const endGameEl = document.querySelector("#end-game-container");
 
-const randomWordApi = "https://random-word-api.herokuapp.com/word"
+
 
 let randomWord;
 let score = 0;
@@ -21,30 +21,28 @@ let difficulty =
 difficultySelect.value = difficulty;
 
 
-/*function getRandomWord() {
-    fetch(randomWordApi)
-    .then((response) => response.json())
-    .then(datas => {
-        randomWord = datas
-          console.log(randomWord)
-    })    
-}*/
-let newArray = [];
 
 
-//Function to get random word from API
-function getRandomWord() {
-    fetch(randomWordApi)
-    .then((response) => response.json())
-    .then(data => {
-        randomWord = data[0];
-        word.innerHTML = randomWord;
-    })    
+
+const randomWordApi = "https://random-word-api.herokuapp.com/all"
+//Function to get random word from API and stores in localStorage
+async function getRandomWordList() {
+    let fetchData = await fetch(randomWordApi);
+    let data = await fetchData.json();
+    window.localStorage.clear();
+    window.localStorage.setItem('myData',storedData);    
 }
+//Display a random word from localStorage 
+ function randomWordDisplay(){
 
-
-      
-
+    let newData =JSON.parse(window.localStorage.getItem('myData'))
+    
+    //Here I want to display random word from list array
+    index = Math.floor(Math.random()*newData.length)
+       randomWord = newData[index];
+       word.innerHTML = randomWord
+       console.log(randomWord);
+}     
 //Game over function if user failed
 function gameOver() {
   endGameEl.innerHTML = `
@@ -76,7 +74,7 @@ text.addEventListener("input", (e) => {
   const typedText = e.target.value;
   if (typedText === word.innerHTML) {
     updateScore();
-    getRandomWord();
+    randomWordDisplay();
 
     e.target.value = "";
     if (difficulty === "hard") {
@@ -89,8 +87,7 @@ text.addEventListener("input", (e) => {
   }
 });
 //Random word Display
- getRandomWord()
-//getRandomWord();
+randomWordDisplay()
 
 //toggle settings visibility
 settingsBtn.addEventListener("click", () => settings.classList.toggle("hide"));
